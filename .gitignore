@@ -8,3 +8,5 @@ tags
 dumpvect.*.vect
 *.swp
 grc_tests/top_block.py
+build/*
+*.user

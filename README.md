@@ -25,20 +25,13 @@ This animation shows the Gardner timing recovery algorithm in `csdr` locking on 
 How to compile
 --------------
 
-    make
+    mkdir build
+    cd build
+    cmake ..
     sudo make install
-
-The project was only tested on Linux. It has the following dependencies: `libfftw3-dev`
-
-If you compile on ARM, please edit the Makefile and tailor `PARAMS_NEON` for your CPU.
 
 To run the examples, you will also need <a href="http://sdr.osmocom.org/trac/wiki/rtl-sdr">rtl_sdr</a> from Osmocom, and the following packages (at least on Debian): `mplayer octave gnuplot gnuplot-x11`
 
-If you compile `fftw3` from sources for use with `libcsdr`, you need to configure it with 32-bit float support enabled: 
-
-    ./configure --enable-float
-
-(This is for `fftw3`, not `libcsdr`. You do not need to run the configure script before compiling `libcsdr`.)
 
 Credits
 -------
@@ -1466,19 +1459,6 @@ The purpose of *sdr.js* is to make SDR DSP processing available in the web brows
 
 To compile *sdr.js*, first get <a href="http://emscripten.org/">Emscripten</a>. (It turns out that there is an *emscripten* package in Ubuntu repositories.)
 
-To install and build dependencies (for now, only FFTW3):
-
-    make emcc-get-deps
-
-To compile *sdr.js* (which will be created in the `sdr.js` subdirectory):
-
-    make emcc
-
-You can test *sdr.js* by opening *sdr.html*. It contains a test for *firdes_lowpass_f* for this time.
-
-To remove *sdr.js* and the compiled dependencies:
-
-    make emcc-clean
 
 ## [nmux](#nmux)
 
