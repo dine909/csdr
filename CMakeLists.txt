@@ -4,7 +4,7 @@ set(FFTW_VERSION 3.3.8)
 
 get_cmake_property(vars CACHE_VARIABLES)
 foreach(var ${vars})
-  get_property(currentHelpString CACHE "${var}" PROPERTY HELPSTRING)
+    get_property(currentHelpString CACHE "${var}" PROPERTY HELPSTRING)
     if("${currentHelpString}" MATCHES "No help, variable specified on the command line." OR "${currentHelpString}" STREQUAL "")
         # message("${var} = [${${var}}]  --  ${currentHelpString}") # uncomment to see the variables being processed
         list(APPEND CL_ARGS "-D${var}=${${var}}")
@@ -21,22 +21,32 @@ add_definitions(-DLIBCSDR_GPL)
 add_definitions(-DUSE_IMA_ADPCM)
 add_definitions(-DUSE_FFTW)
 
-ExternalProject_Add(project_fftw
-  URL http://www.fftw.org/fftw-${FFTW_VERSION}.tar.gz
-  PREFIX ${CMAKE_CURRENT_BINARY_DIR}/fftw-${FFTW_VERSION}
-  BUILD_IN_SOURCE 1
-  CMAKE_ARGS  ${CL_ARGS} -DENABLE_FLOAT=1 -DDISABLE_FORTRAN=1 -DBUILD_SHARED_LIBS=0
-  INSTALL_COMMAND ""
-)
+find_library(FFTW_SHARED_LIB fftw3f)
+if( NOT FFTW_SHARED_LIB )
+    ExternalProject_Add(project_fftw
+        URL http://www.fftw.org/fftw-${FFTW_VERSION}.tar.gz
+        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/fftw-${FFTW_VERSION}
+        BUILD_IN_SOURCE 1
+        CMAKE_ARGS  ${CL_ARGS} -DENABLE_FLOAT=1 -DDISABLE_FORTRAN=1 -DBUILD_SHARED_LIBS=0
+        INSTALL_COMMAND ""
+        )
+    ExternalProject_Get_Property(project_fftw source_dir)
+    add_library(fftw STATIC IMPORTED)
+    set_property(TARGET fftw PROPERTY IMPORTED_LOCATION ${source_dir}/libfftw3f.a)
+    add_dependencies(fftw project_fftw)
 
-ExternalProject_Get_Property(project_fftw source_dir)
+    target_link_libraries(lib${PROJECT_NAME} fftw)
+    include_directories(${source_dir}/api)
 
-include_directories(${source_dir}/api)
-add_library(fftw STATIC IMPORTED)
-set_property(TARGET fftw PROPERTY IMPORTED_LOCATION ${source_dir}/libfftw3f.a)
-add_dependencies(fftw project_fftw)
+else()
+    find_package(FFTW3)
+    target_link_libraries(lib${PROJECT_NAME} ${FFTW_SHARED_LIB})
+    include_directories(${FFTW3_INCLUDE_DIRS})
+endif()
 
-target_link_libraries(lib${PROJECT_NAME} fftw)
+
+
+
 target_link_libraries(lib${PROJECT_NAME} m)
 install(TARGETS lib${PROJECT_NAME} DESTINATION lib)
 install(FILES lib${PROJECT_NAME}.h DESTINATION include)
