@@ -1,6 +1,8 @@
 CSDR
 ====
 
+[ This clone merely implents the cmake build system. ]
+
 `csdr` is a command line tool to carry out DSP tasks for Software Defined Radio.
 
 It can be used to build simple signal processing flow graphs, right from the command line. 
